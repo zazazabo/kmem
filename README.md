@@ -2,9 +2,9 @@
     <img src="https://githacks.org/_xeroxz/kmem/-/raw/f9d610783e8699406bf47e2d443813f4b976c4bf/img/kmem-icon.png"/>
 </div>
 
-# kmem
+# /proc/kmem
 
-/proc/kmem reimplementation for windows. The process created is named "/proc/kmem" which you can see in task manager + use CreateToolhelp32Snapshot to obtain the PID of this process. 
+/proc/kmem reimplementation for windows. Instead of an illusionary file, its a process named "/proc/kmem" which you can see in task manager + use CreateToolhelp32Snapshot to obtain the PID. 
 On windows I was told it was "impossible to name your process something other then the executables name" so I figured I would go the extra mile and throw in some forward slashes into the name
 since you dont see that very often on windows.
 
