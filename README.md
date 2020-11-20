@@ -59,3 +59,7 @@ of the kernel memory which you can then use with ReadProcessMemory/WriteProcessM
 		return reinterpret_cast<std::uintptr_t>(new_addr.value);
 	}
 ```
+
+# Warning
+
+WriteProcessMemory does not work right now since NtWriteVirtualMemory --> MmCopyVirtualMemory --> MmProbeAndLockPages <--- this fails. https://githacks.org/_xeroxz/kmem/-/issues/1
