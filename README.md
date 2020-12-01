@@ -48,18 +48,45 @@ to still use windows api, you must call `nasa::kmem_ctx::translate`. `translate`
 of the kernel memory which you can then use with ReadProcessMemory/WriteProcessMemory...
 
 ```cpp
-	auto kmem_ctx::translate(std::uintptr_t kva) -> std::uintptr_t
-	{
-		virt_addr_t old_addr{ reinterpret_cast<void*>(kva) };
-		virt_addr_t new_addr{ NULL };
-		new_addr.pml4_index = old_addr.pml4_index - 255;
-		new_addr.pdpt_index = old_addr.pdpt_index;
-		new_addr.pd_index = old_addr.pd_index;
-		new_addr.pt_index = old_addr.pt_index;
-		return reinterpret_cast<std::uintptr_t>(new_addr.value);
-	}
+auto kmem_ctx::translate(std::uintptr_t kva) -> std::uintptr_t
+{
+	virt_addr_t old_addr{ reinterpret_cast<void*>(kva) };
+	virt_addr_t new_addr{ NULL };
+	new_addr.pml4_index = old_addr.pml4_index - 255;
+	new_addr.pdpt_index = old_addr.pdpt_index;
+	new_addr.pd_index = old_addr.pd_index;
+	new_addr.pt_index = old_addr.pt_index;
+	return reinterpret_cast<std::uintptr_t>(new_addr.value);
+}
 ```
 
+### Example
+
+```cpp
+auto kmem_handle = nasa::kmem_ctx::get_handle();
+unsigned short mz = 0u;
+std::size_t bytes_handled;
+
+// ReadProcessMemory kernel memory example...
+result = ReadProcessMemory(
+	kmem_handle,
+	reinterpret_cast<void*>(ntoskrnl_translated),
+	&mz, sizeof mz,
+	&bytes_handled
+);
+
+
+std::printf("[+] ReadProcessMemory Result -> %d, mz -> 0x%x\n", result, mz);
+```
+
+```
+[+] ntoskrnl base -> 0xFFFFF8024A600000
+[+] ntoskrnl translated -> 0x000078824A600000
+[+] set manager pethread -> 0xFFFF848887775040
+[+] suspend thread result -> 0x0000000000000000
+[+] ReadProcessMemory Result -> 1, mz -> 0x5a4d
+[+] press enter to exit...
+```
 # Warning
 
 WriteProcessMemory does not work right now since NtWriteVirtualMemory --> MmCopyVirtualMemory --> MmProbeAndLockPages <--- this fails. https://githacks.org/_xeroxz/kmem/-/issues/1
